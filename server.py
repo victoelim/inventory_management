@@ -19,9 +19,16 @@ def after_request(response):
 def migrate():
     db.evolve(ignore_tables={'base_model'})
 
-@app.route('/')
-def index():
-    return render_template('index.html')
+@app.route('/store/', methods=['GET'])
+def store_index():
+    stores = Store.select()
+    return render_template('index.html', stores = stores)
+
+@app.route('/store/:<store_id>', methods=['GET'])
+def store_show(store_id):
+    store = Store.get_by_id(request.args.get('store_id', store_id))
+    store_warehouse = Warehouse.select().where(Warehouse.store == store.id)
+    return render_template('store_show.html', store = store, store_warehouse = store_warehouse)
 
 @app.route('/store/new', methods=["GET"])
 def store_new():
@@ -34,6 +41,13 @@ def store_create():
     if store_1.save():
         flash("Store succesfully created")
     return redirect(url_for('store_new'))
+
+@app.route('/store/:<store_id>/', methods=['POST'])
+def store_update(store_id):
+    store = Store.get_by_id(request.args.get('store_id', store_id))
+    store.name = request.form.get('store_update_name')
+    store.save()
+    return redirect(url_for('store_show', store_id = store_id))
 
 @app.route('/warehouse/new', methods=['GET'])
 def warehouse_new():

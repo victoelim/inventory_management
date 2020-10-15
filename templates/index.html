@@ -1,4 +1,22 @@
 {% extends "_layout.html" %}
 {% block content %}
 <h1>Homepage</h1>
+<table class="table">
+    <thead>
+      <tr>
+        <th scope="col">ID</th>
+        <th scope="col">Name</th>
+        <th scope="col">Show</th>
+        <th scope="col">Delete</th>
+      </tr>
+    </thead>
+    <tbody>
+        {% for s in stores %}
+            <tr>
+                <th scope="row">{{s.id}}</th>
+                <td>{{s.name}}</td>
+                <td><a href="{{ url_for('store_show', store_id=s.id) }}">Show</a></td>
+                <td>Delete</td>
+            </tr>
+        {% endfor %}
 {% endblock %}
